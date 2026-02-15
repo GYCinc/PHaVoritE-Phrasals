@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -46,6 +47,7 @@ import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 type ViewMode = 'browse' | 'flashcards' | 'quiz' | 'progress';
 
 export default function Index() {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<ViewMode>('browse');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState('all');
@@ -265,6 +267,15 @@ export default function Index() {
               >
                 <Target className="w-4 h-4" />
                 View Progress
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                onClick={() => navigate('/theme-studio')}
+                className="gap-2 border-white/20 text-white hover:bg-white/10"
+              >
+                <Sparkles className="w-4 h-4" />
+                Theme Studio
               </Button>
             </div>
           </div>
