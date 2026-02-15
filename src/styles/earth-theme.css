@@ -1,0 +1,142 @@
+/* ==========================================================================
+   EARTH & CLAY THEME - Warm, organic, NOT SaaS
+   Inspired by terracotta, desert sands, sage, and warm sunsets
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Earth Palette - Warm and inviting */
+  --earth-ink: #2c2420;
+  --earth-clay: #c75d3a;
+  --earth-terracotta: #d4845e;
+  --earth-sand: #f5e6d3;
+  --earth-cream: #faf6f0;
+  --earth-sage: #7a9e7e;
+  --earth-moss: #5c7a5e;
+  --earth-gold: #d4a574;
+  --earth-coral: #e07a5f;
+  
+  /* Shadows */
+  --shadow-clay: rgba(199, 93, 58, 0.25);
+  --shadow-sage: rgba(122, 158, 126, 0.25);
+  --shadow-warm: rgba(212, 165, 116, 0.2);
+  
+  /* Map to app variables */
+  --background: 35 43% 96%;
+  --foreground: 20 18% 15%;
+  --card: 35 43% 98%;
+  --card-foreground: 20 18% 15%;
+  --popover: 35 43% 98%;
+  --popover-foreground: 20 18% 15%;
+  --primary: 15 55% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 130 25% 55%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 35 30% 90%;
+  --muted-foreground: 20 15% 40%;
+  --accent: 35 70% 65%;
+  --accent-foreground: 20 18% 15%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 35 25% 85%;
+  --input: 35 25% 85%;
+  --ring: 15 55% 50%;
+  --radius: 0.75rem;
+}
+
+/* Dark mode - warm and cozy, not cold blue */
+.dark {
+  --earth-ink: #f5e6d3;
+  --earth-clay: #e07a5f;
+  --earth-terracotta: #d4845e;
+  --earth-sand: #3d3229;
+  --earth-cream: #2c2420;
+  --earth-sage: #8fb396;
+  --earth-moss: #7a9e7e;
+  --earth-gold: #d4a574;
+  --earth-coral: #e07a5f;
+  
+  --background: 20 18% 12%;
+  --foreground: 35 43% 90%;
+  --card: 20 18% 15%;
+  --card-foreground: 35 43% 90%;
+  --popover: 20 18% 15%;
+  --popover-foreground: 35 43% 90%;
+  --primary: 15 65% 55%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 130 25% 45%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 20 15% 25%;
+  --muted-foreground: 35 30% 70%;
+  --accent: 35 70% 55%;
+  --accent-foreground: 20 18% 15%;
+  --destructive: 0 62% 30%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 20 15% 25%;
+  --input: 20 15% 25%;
+  --ring: 15 65% 55%;
+}
+
+/* Typography */
+.font-display {
+  font-family: 'Fraunces', Georgia, serif;
+}
+
+.font-body {
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--earth-sand);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--earth-sage);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--earth-moss);
+}
+
+/* Selection */
+::selection {
+  background: var(--earth-gold);
+  color: var(--earth-ink);
+}
+
+/* Focus visible */
+*:focus-visible {
+  outline: 2px solid var(--earth-clay);
+  outline-offset: 2px;
+}
+
+/* Animation for cards */
+@keyframes floatUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-float-up {
+  animation: floatUp 0.6s ease-out forwards;
+}
+
+/* Stagger delays */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }

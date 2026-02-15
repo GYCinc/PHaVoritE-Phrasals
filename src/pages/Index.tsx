@@ -231,21 +231,21 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Hero Section */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600 via-indigo-600 to-blue-600 text-white p-8 md:p-12 mb-8">
+        {/* Hero Section - Earth & Clay Theme */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#1f6f78] via-[#2a8791] to-[#d86b4b] text-white p-8 md:p-12 mb-8 shadow-2xl">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIyIi8+PC9nPjwvZz48L3N2Zz4=')] opacity-30" />
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5" />
-                <span className="text-sm font-medium text-violet-100">PHaVE List</span>
+                <Sparkles className="w-5 h-5 text-[#f2c14e]" />
+                <span className="text-sm font-medium text-[#f6e7cf]">PHaVE List</span>
               </div>
               <ThemeSwitcher variant="dropdown" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4 font-display">
               Master the Top 150 Phrasal Verbs
             </h1>
-            <p className="text-violet-100 text-lg mb-6 max-w-2xl">
+            <p className="text-[#f6e7cf] text-lg mb-6 max-w-2xl">
               Based on the PHaVE (Phrasal Verbs in English) list by Dr. Norbert Schmitt. 
               Learn the most frequent phrasal verbs used in everyday English.
             </p>
