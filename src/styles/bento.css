@@ -3,7 +3,7 @@
    Inspired by Chromatic Bento - A beautiful palette generator
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Space+Grotesk:wght@400;500;600&display=swap');
+/* Fonts loaded via @fontsource in main.tsx */
 
 :root {
   /* Bento Palette - Default values */

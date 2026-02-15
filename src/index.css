@@ -1,9 +1,10 @@
 @import './styles/themes.css';
-@import './styles/bento.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import './styles/bento.css';
 
 @layer base {
   :root {
@@ -100,5 +101,10 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Don't apply to bento pages */
+  .bento-page {
+    background: none;
   }
 }
