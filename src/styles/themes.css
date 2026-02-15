@@ -1,0 +1,665 @@
+/* ==========================================================================
+   PHaVE Learner - Comprehensive Theme System
+   Uses CSS Custom Properties for easy customization
+   ========================================================================== */
+
+/* Base Theme Variables - These are the defaults (Light Theme) */
+:root {
+  /* Primary Brand Colors */
+  --primary-hue: 250;
+  --primary: hsl(var(--primary-hue) 80% 55%);
+  --primary-light: hsl(var(--primary-hue) 80% 65%);
+  --primary-dark: hsl(var(--primary-hue) 80% 45%);
+  --primary-foreground: hsl(0 0% 100%);
+  
+  /* Secondary Colors */
+  --secondary-hue: 220;
+  --secondary: hsl(var(--secondary-hue) 60% 50%);
+  --secondary-light: hsl(var(--secondary-hue) 60% 60%);
+  --secondary-dark: hsl(var(--secondary-hue) 60% 40%);
+  --secondary-foreground: hsl(0 0% 100%);
+  
+  /* Accent Colors */
+  --accent-hue: 280;
+  --accent: hsl(var(--accent-hue) 70% 55%);
+  --accent-light: hsl(var(--accent-hue) 70% 65%);
+  --accent-dark: hsl(var(--accent-hue) 70% 45%);
+  --accent-foreground: hsl(0 0% 100%);
+  
+  /* Semantic Colors */
+  --success-hue: 150;
+  --success: hsl(var(--success-hue) 70% 45%);
+  --success-light: hsl(var(--success-hue) 70% 90%);
+  --success-dark: hsl(var(--success-hue) 70% 35%);
+  
+  --warning-hue: 40;
+  --warning: hsl(var(--warning-hue) 90% 50%);
+  --warning-light: hsl(var(--warning-hue) 90% 90%);
+  --warning-dark: hsl(var(--warning-hue) 90% 40%);
+  
+  --error-hue: 0;
+  --error: hsl(var(--error-hue) 80% 55%);
+  --error-light: hsl(var(--error-hue) 80% 90%);
+  --error-dark: hsl(var(--error-hue) 80% 45%);
+  
+  --info-hue: 200;
+  --info: hsl(var(--info-hue) 80% 55%);
+  --info-light: hsl(var(--info-hue) 80% 90%);
+  --info-dark: hsl(var(--info-hue) 80% 45%);
+  
+  /* Background Colors */
+  --background: hsl(0 0% 100%);
+  --background-secondary: hsl(0 0% 98%);
+  --background-tertiary: hsl(0 0% 96%);
+  --background-elevated: hsl(0 0% 100%);
+  
+  /* Foreground Colors */
+  --foreground: hsl(220 20% 10%);
+  --foreground-secondary: hsl(220 10% 40%);
+  --foreground-tertiary: hsl(220 10% 60%);
+  --foreground-muted: hsl(220 10% 70%);
+  
+  /* Border Colors */
+  --border: hsl(220 15% 90%);
+  --border-light: hsl(220 15% 95%);
+  --border-dark: hsl(220 15% 80%);
+  
+  /* Shadow Colors */
+  --shadow-color: hsl(220 30% 5%);
+  --shadow-sm: 0 1px 2px 0 hsl(var(--shadow-color) / 0.05);
+  --shadow: 0 1px 3px 0 hsl(var(--shadow-color) / 0.1), 0 1px 2px -1px hsl(var(--shadow-color) / 0.1);
+  --shadow-md: 0 4px 6px -1px hsl(var(--shadow-color) / 0.1), 0 2px 4px -2px hsl(var(--shadow-color) / 0.1);
+  --shadow-lg: 0 10px 15px -3px hsl(var(--shadow-color) / 0.1), 0 4px 6px -4px hsl(var(--shadow-color) / 0.1);
+  --shadow-xl: 0 20px 25px -5px hsl(var(--shadow-color) / 0.1), 0 8px 10px -6px hsl(var(--shadow-color) / 0.1);
+  
+  /* Card Colors */
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(220 20% 10%);
+  
+  /* Input Colors */
+  --input: hsl(220 15% 90%);
+  --input-background: hsl(0 0% 100%);
+  --input-foreground: hsl(220 20% 10%);
+  
+  /* Ring/Focus Colors */
+  --ring: hsl(var(--primary-hue) 80% 55%);
+  --ring-offset: hsl(0 0% 100%);
+  
+  /* Radius */
+  --radius: 0.5rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+  
+  /* Animation */
+  --animation-duration-fast: 150ms;
+  --animation-duration-normal: 250ms;
+  --animation-duration-slow: 350ms;
+  --animation-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Spacing Scale (for reference) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+}
+
+/* ==========================================================================
+   DARK THEME
+   ========================================================================== */
+[data-theme="dark"],
+.dark {
+  /* Primary stays similar but adjusted for dark */
+  --primary: hsl(var(--primary-hue) 70% 60%);
+  --primary-light: hsl(var(--primary-hue) 70% 70%);
+  --primary-dark: hsl(var(--primary-hue) 70% 50%);
+  --primary-foreground: hsl(0 0% 100%);
+  
+  /* Secondary */
+  --secondary: hsl(var(--secondary-hue) 50% 55%);
+  --secondary-light: hsl(var(--secondary-hue) 50% 65%);
+  --secondary-dark: hsl(var(--secondary-hue) 50% 45%);
+  --secondary-foreground: hsl(0 0% 100%);
+  
+  /* Accent */
+  --accent: hsl(var(--accent-hue) 60% 60%);
+  --accent-light: hsl(var(--accent-hue) 60% 70%);
+  --accent-dark: hsl(var(--accent-hue) 60% 50%);
+  --accent-foreground: hsl(0 0% 100%);
+  
+  /* Background Colors - Dark */
+  --background: hsl(220 20% 8%);
+  --background-secondary: hsl(220 20% 10%);
+  --background-tertiary: hsl(220 20% 12%);
+  --background-elevated: hsl(220 20% 14%);
+  
+  /* Foreground Colors - Light for dark bg */
+  --foreground: hsl(0 0% 95%);
+  --foreground-secondary: hsl(0 0% 75%);
+  --foreground-tertiary: hsl(0 0% 60%);
+  --foreground-muted: hsl(0 0% 50%);
+  
+  /* Border Colors */
+  --border: hsl(220 15% 20%);
+  --border-light: hsl(220 15% 15%);
+  --border-dark: hsl(220 15% 25%);
+  
+  /* Shadow Colors - lighter for dark mode */
+  --shadow-color: hsl(0 0% 0%);
+  
+  /* Card Colors */
+  --card: hsl(220 20% 10%);
+  --card-foreground: hsl(0 0% 95%);
+  
+  /* Input Colors */
+  --input: hsl(220 15% 20%);
+  --input-background: hsl(220 20% 12%);
+  --input-foreground: hsl(0 0% 95%);
+  
+  /* Ring/Focus Colors */
+  --ring: hsl(var(--primary-hue) 70% 60%);
+  --ring-offset: hsl(220 20% 8%);
+}
+
+/* ==========================================================================
+   HIGH CONTRAST THEME
+   ========================================================================== */
+[data-theme="high-contrast"] {
+  --primary: hsl(220 100% 50%);
+  --primary-foreground: hsl(0 0% 100%);
+  
+  --background: hsl(0 0% 100%);
+  --background-secondary: hsl(0 0% 98%);
+  
+  --foreground: hsl(0 0% 0%);
+  --foreground-secondary: hsl(0 0% 20%);
+  
+  --border: hsl(0 0% 0%);
+  --border-light: hsl(0 0% 80%);
+  
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(0 0% 0%);
+  
+  /* Stronger shadows for better depth perception */
+  --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.2);
+  --shadow: 0 1px 3px 0 hsl(0 0% 0% / 0.3), 0 1px 2px -1px hsl(0 0% 0% / 0.3);
+  --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.3), 0 2px 4px -2px hsl(0 0% 0% / 0.3);
+}
+
+/* ==========================================================================
+   COLORFUL THEME (Vibrant)
+   ========================================================================== */
+[data-theme="colorful"] {
+  --primary-hue: 270;
+  --primary: hsl(var(--primary-hue) 90% 60%);
+  --primary-light: hsl(var(--primary-hue) 90% 70%);
+  --primary-dark: hsl(var(--primary-hue) 90% 50%);
+  
+  --secondary-hue: 320;
+  --secondary: hsl(var(--secondary-hue) 85% 55%);
+  --secondary-light: hsl(var(--secondary-hue) 85% 65%);
+  
+  --accent-hue: 30;
+  --accent: hsl(var(--accent-hue) 95% 55%);
+  --accent-light: hsl(var(--accent-hue) 95% 65%);
+  
+  --success: hsl(150 90% 45%);
+  --warning: hsl(45 95% 50%);
+  --error: hsl(350 90% 55%);
+  --info: hsl(200 90% 55%);
+  
+  --background: hsl(260 30% 98%);
+  --background-secondary: hsl(260 25% 96%);
+  --background-tertiary: hsl(260 20% 94%);
+  
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(260 30% 15%);
+}
+
+/* ==========================================================================
+   SEPIA THEME (Easy on the eyes)
+   ========================================================================== */
+[data-theme="sepia"] {
+  --primary-hue: 30;
+  --primary: hsl(var(--primary-hue) 60% 40%);
+  --primary-light: hsl(var(--primary-hue) 60% 50%);
+  --primary-dark: hsl(var(--primary-hue) 60% 30%);
+  --primary-foreground: hsl(0 0% 100%);
+  
+  --secondary-hue: 25;
+  --secondary: hsl(var(--secondary-hue) 50% 45%);
+  
+  --accent-hue: 45;
+  --accent: hsl(var(--accent-hue) 70% 45%);
+  
+  --success: hsl(140 50% 35%);
+  --warning: hsl(40 80% 45%);
+  --error: hsl(0 60% 50%);
+  --info: hsl(200 50% 45%);
+  
+  /* Warm sepia backgrounds */
+  --background: hsl(40 30% 92%);
+  --background-secondary: hsl(40 25% 88%);
+  --background-tertiary: hsl(40 20% 84%);
+  --background-elevated: hsl(40 25% 90%);
+  
+  /* Dark sepia text */
+  --foreground: hsl(30 40% 15%);
+  --foreground-secondary: hsl(30 30% 30%);
+  --foreground-tertiary: hsl(30 25% 45%);
+  --foreground-muted: hsl(30 20% 55%);
+  
+  /* Sepia borders */
+  --border: hsl(35 25% 75%);
+  --border-light: hsl(35 25% 85%);
+  --border-dark: hsl(35 25% 65%);
+  
+  /* Sepia cards */
+  --card: hsl(40 25% 94%);
+  --card-foreground: hsl(30 40% 15%);
+  
+  /* Sepia inputs */
+  --input: hsl(35 25% 80%);
+  --input-background: hsl(40 25% 92%);
+  --input-foreground: hsl(30 40% 15%);
+  
+  /* Sepia ring */
+  --ring: hsl(var(--primary-hue) 60% 40%);
+  --ring-offset: hsl(40 30% 92%);
+}
+
+/* ==========================================================================
+   MIDNIGHT THEME (Deep dark blue)
+   ========================================================================== */
+[data-theme="midnight"] {
+  --primary-hue: 220;
+  --primary: hsl(var(--primary-hue) 90% 60%);
+  --primary-light: hsl(var(--primary-hue) 90% 70%);
+  --primary-dark: hsl(var(--primary-hue) 90% 50%);
+  --primary-foreground: hsl(0 0% 100%);
+  
+  --secondary-hue: 200;
+  --secondary: hsl(var(--secondary-hue) 80% 55%);
+  
+  --accent-hue: 280;
+  --accent: hsl(var(--accent-hue) 80% 65%);
+  
+  --success: hsl(160 90% 45%);
+  --warning: hsl(45 90% 55%);
+  --error: hsl(350 90% 60%);
+  --info: hsl(200 90% 60%);
+  
+  /* Deep midnight backgrounds */
+  --background: hsl(220 40% 8%);
+  --background-secondary: hsl(220 35% 10%);
+  --background-tertiary: hsl(220 30% 12%);
+  --background-elevated: hsl(220 35% 14%);
+  
+  /* Light text on dark */
+  --foreground: hsl(220 20% 95%);
+  --foreground-secondary: hsl(220 15% 75%);
+  --foreground-tertiary: hsl(220 15% 60%);
+  --foreground-muted: hsl(220 15% 50%);
+  
+  /* Midnight borders */
+  --border: hsl(220 25% 20%);
+  --border-light: hsl(220 25% 15%);
+  --border-dark: hsl(220 25% 25%);
+  
+  /* Midnight cards */
+  --card: hsl(220 35% 12%);
+  --card-foreground: hsl(220 20% 95%);
+  
+  /* Midnight inputs */
+  --input: hsl(220 25% 18%);
+  --input-background: hsl(220 30% 10%);
+  --input-foreground: hsl(220 20% 95%);
+  
+  /* Midnight ring */
+  --ring: hsl(var(--primary-hue) 90% 60%);
+  --ring-offset: hsl(220 40% 8%);
+}
+
+/* ==========================================================================
+   FOREST THEME (Nature inspired greens)
+   ========================================================================== */
+[data-theme="forest"] {
+  --primary-hue: 145;
+  --primary: hsl(var(--primary-hue) 70% 35%);
+  --primary-light: hsl(var(--primary-hue) 70% 45%);
+  --primary-dark: hsl(var(--primary-hue) 70% 25%);
+  --primary-foreground: hsl(0 0% 100%);
+  
+  --secondary-hue: 160;
+  --secondary: hsl(var(--secondary-hue) 60% 40%);
+  
+  --accent-hue: 35;
+  --accent: hsl(var(--accent-hue) 80% 50%);
+  
+  --success: hsl(140 60% 40%);
+  --warning: hsl(45 90% 50%);
+  --error: hsl(0 70% 50%);
+  --info: hsl(190 70% 45%);
+  
+  /* Forest backgrounds - warm off-white with green tint */
+  --background: hsl(80 20% 97%);
+  --background-secondary: hsl(80 15% 94%);
+  --background-tertiary: hsl(80 15% 90%);
+  --background-elevated: hsl(80 15% 96%);
+  
+  /* Dark forest text */
+  --foreground: hsl(140 30% 15%);
+  --foreground-secondary: hsl(140 20% 30%);
+  --foreground-tertiary: hsl(140 15% 45%);
+  --foreground-muted: hsl(140 10% 55%);
+  
+  /* Forest borders */
+  --border: hsl(100 20% 80%);
+  --border-light: hsl(100 20% 90%);
+  --border-dark: hsl(100 20% 70%);
+  
+  /* Forest cards */
+  --card: hsl(80 15% 96%);
+  --card-foreground: hsl(140 30% 15%);
+  
+  /* Forest inputs */
+  --input: hsl(100 20% 85%);
+  --input-background: hsl(80 15% 97%);
+  --input-foreground: hsl(140 30% 15%);
+  
+  /* Forest ring */
+  --ring: hsl(var(--primary-hue) 70% 35%);
+  --ring-offset: hsl(80 20% 97%);
+}
+
+/* ==========================================================================
+   SUNSET THEME (Warm oranges and purples)
+   ========================================================================== */
+[data-theme="sunset"] {
+  --primary-hue: 25;
+  --primary: hsl(var(--primary-hue) 95% 55%);
+  --primary-light: hsl(var(--primary-hue) 95% 65%);
+  --primary-dark: hsl(var(--primary-hue) 95% 45%);
+  --primary-foreground: hsl(0 0% 100%);
+  
+  --secondary-hue: 280;
+  --secondary: hsl(var(--secondary-hue) 70% 55%);
+  
+  --accent-hue: 340;
+  --accent: hsl(var(--accent-hue) 85% 55%);
+  
+  --success: hsl(150 80% 45%);
+  --warning: hsl(45 95% 55%);
+  --error: hsl(350 85% 60%);
+  --info: hsl(200 85% 55%);
+  
+  /* Sunset backgrounds - warm cream */
+  --background: hsl(30 30% 97%);
+  --background-secondary: hsl(30 25% 94%);
+  --background-tertiary: hsl(30 20% 90%);
+  --background-elevated: hsl(30 25% 96%);
+  
+  /* Dark warm text */
+  --foreground: hsl(25 40% 15%);
+  --foreground-secondary: hsl(25 30% 30%);
+  --foreground-tertiary: hsl(25 25% 45%);
+  --foreground-muted: hsl(25 20% 55%);
+  
+  /* Sunset borders */
+  --border: hsl(25 30% 80%);
+  --border-light: hsl(25 30% 90%);
+  --border-dark: hsl(25 30% 70%);
+  
+  /* Sunset cards */
+  --card: hsl(30 25% 96%);
+  --card-foreground: hsl(25 40% 15%);
+  
+  /* Sunset inputs */
+  --input: hsl(25 30% 85%);
+  --input-background: hsl(30 30% 97%);
+  --input-foreground: hsl(25 40% 15%);
+  
+  /* Sunset ring */
+  --ring: hsl(var(--primary-hue) 95% 55%);
+  --ring-offset: hsl(30 30% 97%);
+}
+
+/* ==========================================================================
+   UTILITY CLASSES FOR CUSTOMIZATION
+   ========================================================================== */
+
+/* Primary Color Utilities */
+.bg-primary-custom { background-color: var(--primary); }
+.bg-primary-light { background-color: var(--primary-light); }
+.bg-primary-dark { background-color: var(--primary-dark); }
+.text-primary-custom { color: var(--primary); }
+.text-primary-light { color: var(--primary-light); }
+.text-primary-dark { color: var(--primary-dark); }
+.border-primary-custom { border-color: var(--primary); }
+.ring-primary-custom { --tw-ring-color: var(--primary); }
+
+/* Secondary Color Utilities */
+.bg-secondary-custom { background-color: var(--secondary); }
+.bg-secondary-light { background-color: var(--secondary-light); }
+.text-secondary-custom { color: var(--secondary); }
+.text-secondary-light { color: var(--secondary-light); }
+.border-secondary-custom { border-color: var(--secondary); }
+
+/* Accent Color Utilities */
+.bg-accent-custom { background-color: var(--accent); }
+.bg-accent-light { background-color: var(--accent-light); }
+.text-accent-custom { color: var(--accent); }
+.text-accent-light { color: var(--accent-light); }
+.border-accent-custom { border-color: var(--accent); }
+
+/* Semantic Color Utilities */
+.bg-success-custom { background-color: var(--success); }
+.bg-success-light { background-color: var(--success-light); }
+.text-success-custom { color: var(--success); }
+.border-success-custom { border-color: var(--success); }
+
+.bg-warning-custom { background-color: var(--warning); }
+.bg-warning-light { background-color: var(--warning-light); }
+.text-warning-custom { color: var(--warning); }
+.border-warning-custom { border-color: var(--warning); }
+
+.bg-error-custom { background-color: var(--error); }
+.bg-error-light { background-color: var(--error-light); }
+.text-error-custom { color: var(--error); }
+.border-error-custom { border-color: var(--error); }
+
+.bg-info-custom { background-color: var(--info); }
+.bg-info-light { background-color: var(--info-light); }
+.text-info-custom { color: var(--info); }
+.border-info-custom { border-color: var(--info); }
+
+/* Background Utilities */
+.bg-app { background-color: var(--background); }
+.bg-app-secondary { background-color: var(--background-secondary); }
+.bg-app-tertiary { background-color: var(--background-tertiary); }
+.bg-elevated { background-color: var(--background-elevated); }
+
+/* Text Utilities */
+.text-app { color: var(--foreground); }
+.text-app-secondary { color: var(--foreground-secondary); }
+.text-app-tertiary { color: var(--foreground-tertiary); }
+.text-muted-custom { color: var(--foreground-muted); }
+
+/* Border Utilities */
+.border-app { border-color: var(--border); }
+.border-app-light { border-color: var(--border-light); }
+.border-app-dark { border-color: var(--border-dark); }
+
+/* Shadow Utilities */
+.shadow-app-sm { box-shadow: var(--shadow-sm); }
+.shadow-app { box-shadow: var(--shadow); }
+.shadow-app-md { box-shadow: var(--shadow-md); }
+.shadow-app-lg { box-shadow: var(--shadow-lg); }
+.shadow-app-xl { box-shadow: var(--shadow-xl); }
+
+/* Card Utilities */
+.bg-card-custom { background-color: var(--card); }
+.text-card-custom { color: var(--card-foreground); }
+
+/* Input Utilities */
+.bg-input-custom { background-color: var(--input-background); }
+.text-input-custom { color: var(--input-foreground); }
+.border-input-custom { border-color: var(--input); }
+
+/* Ring/Focus Utilities */
+.ring-app { --tw-ring-color: var(--ring); }
+.ring-offset-app { --tw-ring-offset-color: var(--ring-offset); }
+
+/* Animation Utilities */
+.duration-fast { transition-duration: var(--animation-duration-fast); }
+.duration-normal { transition-duration: var(--animation-duration-normal); }
+.duration-slow { transition-duration: var(--animation-duration-slow); }
+
+/* Gradient Utilities */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+}
+
+.gradient-secondary {
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+}
+
+.gradient-hero {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+}
+
+/* Status Badge Utilities */
+.badge-mastered {
+  background-color: var(--success);
+  color: white;
+}
+
+.badge-learning {
+  background-color: var(--warning);
+  color: hsl(0 0% 10%);
+}
+
+.badge-new {
+  background-color: var(--info);
+  color: white;
+}
+
+/* Difficulty Badge Utilities */
+.difficulty-beginner {
+  background-color: var(--success-light);
+  color: var(--success-dark);
+  border: 1px solid var(--success);
+}
+
+.difficulty-intermediate {
+  background-color: var(--warning-light);
+  color: var(--warning-dark);
+  border: 1px solid var(--warning);
+}
+
+.difficulty-advanced {
+  background-color: var(--error-light);
+  color: var(--error-dark);
+  border: 1px solid var(--error);
+}
+
+/* Hover State Utilities */
+.hover-lift {
+  transition: transform var(--animation-duration-normal) var(--animation-timing),
+              box-shadow var(--animation-duration-normal) var(--animation-timing);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.hover-glow {
+  transition: box-shadow var(--animation-duration-normal) var(--animation-timing);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px hsl(var(--primary-hue) 80% 60% / 0.4);
+}
+
+/* Focus State Utilities */
+.focus-ring {
+  transition: ring var(--animation-duration-fast) var(--animation-timing);
+}
+
+.focus-ring:focus {
+  outline: none;
+  ring: 2px;
+  ring-offset: 2px;
+  ring-color: var(--ring);
+  ring-offset-color: var(--ring-offset);
+}
+
+/* Active State Utilities */
+.active-scale {
+  transition: transform var(--animation-duration-fast) var(--animation-timing);
+}
+
+.active-scale:active {
+  transform: scale(0.98);
+}
+
+/* Disabled State Utilities */
+.disabled-muted {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Print Styles */
+@media print {
+  :root {
+    --background: white;
+    --foreground: black;
+    --primary: black;
+    --primary-foreground: white;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --animation-duration-fast: 0ms;
+    --animation-duration-normal: 0ms;
+    --animation-duration-slow: 0ms;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  :root {
+    --border: currentColor;
+    --ring: currentColor;
+  }
+}
