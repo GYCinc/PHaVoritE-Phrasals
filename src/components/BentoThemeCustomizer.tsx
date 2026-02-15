@@ -1,21 +1,4 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Palette, 
-  Shuffle, 
-  Download, 
-  Check, 
-  Sun, 
-  Moon,
-  Sparkles,
-  Layers,
-  Type,
-  Contrast,
-  Palette as PaletteIcon
-} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Color name library for auto-naming
@@ -38,129 +21,51 @@ const colorNameLibrary = [
   { name: 'Cobalt', hex: '#2C65C8' },
   { name: 'Mint', hex: '#7EC6B2' },
   { name: 'Pearl', hex: '#F8F6F0' },
-  { name: 'Violet', hex: '#6366f1' },
-  { name: 'Lavender', hex: '#a78bfa' },
 ];
 
-interface PaletteColor {
-  key: string;
-  hex: string;
-  name: string;
-}
+const paletteKeys = ['teal', 'clay', 'sun', 'sand', 'sage', 'ink'];
 
 interface BentoThemeCustomizerProps {
   onPaletteChange?: (palette: Record<string, string>) => void;
-  className?: string;
 }
 
-export function BentoThemeCustomizer({ onPaletteChange, className }: BentoThemeCustomizerProps) {
-  const [palette, setPalette] = useState<PaletteColor[]>([
-    { key: 'primary', hex: '#6366f1', name: 'Violet' },
-    { key: 'secondary', hex: '#2A8791', name: 'Lagoon' },
-    { key: 'accent', hex: '#F2C14E', name: 'Sun' },
-    { key: 'background', hex: '#F8F6F0', name: 'Pearl' },
-    { key: 'muted', hex: '#9DB59E', name: 'Sage' },
-    { key: 'foreground', hex: '#1F2B2D', name: 'Ink' },
-  ]);
+export function BentoThemeCustomizer({ onPaletteChange }: BentoThemeCustomizerProps) {
+  const [palette, setPalette] = useState<Record<string, string>>({
+    teal: '#1F6F78',
+    clay: '#D86B4B',
+    sun: '#F2C14E',
+    sand: '#F6E7CF',
+    sage: '#9DB59E',
+    ink: '#1F2B2D',
+  });
+  
+  const [colorNames, setColorNames] = useState<Record<string, string>>({
+    teal: 'Deep Teal',
+    clay: 'Clay',
+    sun: 'Sun',
+    sand: 'Sand',
+    sage: 'Sage',
+    ink: 'Ink',
+  });
 
   const [harmonyMode, setHarmonyMode] = useState<'analogous' | 'complementary' | 'triadic'>('analogous');
   const [copied, setCopied] = useState(false);
-  const [autoRandomizing, setAutoRandomizing] = useState(true);
+  const [contrastValues, setContrastValues] = useState<Record<string, { ratio: number; grade: string }>>({});
+  
   const autoRandomRef = useRef<NodeJS.Timeout | null>(null);
+  const autoRandomTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hasInteractedRef = useRef(false);
 
-  // Color conversion utilities
+  // Color utilities
   const normalizeHex = (hex: string): string => {
     if (!hex) return '#000000';
     let value = hex.trim().replace('#', '');
-    if (value.length === 3) {
-      value = value.split('').map(c => c + c).join('');
-    }
+    if (value.length === 3) value = value.split('').map(c => c + c).join('');
     value = value.padStart(6, '0').slice(0, 6);
     return `#${value.toUpperCase()}`;
   };
 
-  const hexToHsl = (hex: string): { h: number; s: number; l: number } => {
-    const value = normalizeHex(hex).replace('#', '');
-    const r = parseInt(value.slice(0, 2), 16) / 255;
-    const g = parseInt(value.slice(2, 4), 16) / 255;
-    const b = parseInt(value.slice(4, 6), 16) / 255;
-
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h = 0;
-    let s = 0;
-    const l = (max + min) / 2;
-
-    if (max !== min) {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-      switch (max) {
-        case r:
-          h = (g - b) / d + (g < b ? 6 : 0);
-          break;
-        case g:
-          h = (b - r) / d + 2;
-          break;
-        case b:
-          h = (r - g) / d + 4;
-          break;
-      }
-      h *= 60;
-    }
-
-    return { h: Math.round(h), s: Math.round(s * 100), l: Math.round(l * 100) };
-  };
-
-  const hslToHex = (h: number, s: number, l: number): string => {
-    const sat = s / 100;
-    const light = l / 100;
-    const c = (1 - Math.abs(2 * light - 1)) * sat;
-    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-    const m = light - c / 2;
-    let r = 0, g = 0, b = 0;
-
-    if (h >= 0 && h < 60) { r = c; g = x; }
-    else if (h >= 60 && h < 120) { r = x; g = c; }
-    else if (h >= 120 && h < 180) { g = c; b = x; }
-    else if (h >= 180 && h < 240) { g = x; b = c; }
-    else if (h >= 240 && h < 300) { r = x; b = c; }
-    else { r = c; b = x; }
-
-    const toHex = (value: number) => {
-      const v = Math.round((value + m) * 255);
-      return v.toString(16).padStart(2, '0');
-    };
-
-    return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
-  };
-
-  const shiftHue = (h: number, offset: number): number => {
-    return (h + offset + 360) % 360;
-  };
-
-  const getNearestColorName = (hex: string): string => {
-    const target = hexToRgb(hex);
-    let closest = colorNameLibrary[0].name;
-    let bestDistance = Number.POSITIVE_INFINITY;
-
-    colorNameLibrary.forEach(entry => {
-      const rgb = hexToRgb(entry.hex);
-      const distance =
-        Math.pow(target.r - rgb.r, 2) +
-        Math.pow(target.g - rgb.g, 2) +
-        Math.pow(target.b - rgb.b, 2);
-
-      if (distance < bestDistance) {
-        bestDistance = distance;
-        closest = entry.name;
-      }
-    });
-
-    return closest;
-  };
-
-  const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
+  const hexToRgb = (hex: string) => {
     const value = normalizeHex(hex).replace('#', '');
     return {
       r: parseInt(value.slice(0, 2), 16),
@@ -169,39 +74,141 @@ export function BentoThemeCustomizer({ onPaletteChange, className }: BentoThemeC
     };
   };
 
-  const getReadableTextColor = (hex: string): string => {
-    const white = '#FFFFFF';
-    const dark = '#1F2B2D';
-    const whiteContrast = contrastRatio(hex, white);
-    const darkContrast = contrastRatio(hex, dark);
-    return whiteContrast >= darkContrast ? white : dark;
+  const rgbToHex = (r: number, g: number, b: number) => {
+    const toHex = (v: number) => Math.round(v).toString(16).padStart(2, '0');
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
   };
 
-  const relativeLuminance = (hex: string): number => {
+  const hexToHsl = (hex: string) => {
     const { r, g, b } = hexToRgb(hex);
-    const transform = (value: number) => {
-      const v = value / 255;
-      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    const rNorm = r / 255, gNorm = g / 255, bNorm = b / 255;
+    const max = Math.max(rNorm, gNorm, bNorm);
+    const min = Math.min(rNorm, gNorm, bNorm);
+    let h = 0, s = 0;
+    const l = (max + min) / 2;
+
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case rNorm: h = ((gNorm - bNorm) / d + (gNorm < bNorm ? 6 : 0)) * 60; break;
+        case gNorm: h = ((bNorm - rNorm) / d + 2) * 60; break;
+        case bNorm: h = ((rNorm - gNorm) / d + 4) * 60; break;
+      }
+    }
+    return { h: Math.round(h), s: Math.round(s * 100), l: Math.round(l * 100) };
+  };
+
+  const hslToHex = (h: number, s: number, l: number) => {
+    const sat = s / 100, light = l / 100;
+    const c = (1 - Math.abs(2 * light - 1)) * sat;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = light - c / 2;
+    let r = 0, g = 0, b = 0;
+
+    if (h < 60) { r = c; g = x; }
+    else if (h < 120) { r = x; g = c; }
+    else if (h < 180) { g = c; b = x; }
+    else if (h < 240) { g = x; b = c; }
+    else if (h < 300) { r = x; b = c; }
+    else { r = c; b = x; }
+
+    return rgbToHex((r + m) * 255, (g + m) * 255, (b + m) * 255);
+  };
+
+  const shiftHue = (h: number, offset: number) => (h + offset + 360) % 360;
+
+  const getNearestColorName = (hex: string) => {
+    const target = hexToRgb(hex);
+    let closest = colorNameLibrary[0].name;
+    let bestDistance = Infinity;
+
+    colorNameLibrary.forEach(entry => {
+      const rgb = hexToRgb(entry.hex);
+      const distance = Math.pow(target.r - rgb.r, 2) + Math.pow(target.g - rgb.g, 2) + Math.pow(target.b - rgb.b, 2);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        closest = entry.name;
+      }
+    });
+    return closest;
+  };
+
+  const relativeLuminance = (hex: string) => {
+    const { r, g, b } = hexToRgb(hex);
+    const transform = (v: number) => {
+      const norm = v / 255;
+      return norm <= 0.03928 ? norm / 12.92 : Math.pow((norm + 0.055) / 1.055, 2.4);
     };
     return 0.2126 * transform(r) + 0.7152 * transform(g) + 0.0722 * transform(b);
   };
 
-  const contrastRatio = (hexA: string, hexB: string): number => {
+  const contrastRatio = (hexA: string, hexB: string) => {
     const lumA = relativeLuminance(hexA);
     const lumB = relativeLuminance(hexB);
-    const lighter = Math.max(lumA, lumB);
-    const darker = Math.min(lumA, lumB);
-    return (lighter + 0.05) / (darker + 0.05);
+    return (Math.max(lumA, lumB) + 0.05) / (Math.min(lumA, lumB) + 0.05);
   };
 
-  const getContrastGrade = (ratio: number): string => {
+  const getContrastGrade = (ratio: number) => {
     if (ratio >= 7) return 'AAA';
     if (ratio >= 4.5) return 'AA';
     if (ratio >= 3) return 'AA Large';
     return 'Fail';
   };
 
-  // Build palette from base color
+  // Apply palette to DOM
+  const applyPalette = useCallback((newPalette: Record<string, string>) => {
+    const root = document.documentElement;
+    
+    // Apply bento variables
+    Object.entries(newPalette).forEach(([key, hex]) => {
+      root.style.setProperty(`--${key}`, hex);
+    });
+
+    // Update shadow variables
+    const setShadowVar = (name: string, hex: string, alpha: number) => {
+      const rgb = hexToRgb(hex);
+      root.style.setProperty(name, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`);
+    };
+
+    if (newPalette.clay) setShadowVar('--clay-shadow', newPalette.clay, 0.28);
+    if (newPalette.teal) setShadowVar('--teal-shadow', newPalette.teal, 0.24);
+    if (newPalette.teal) setShadowVar('--hero-cool', newPalette.teal, 0.12);
+    if (newPalette.sun) setShadowVar('--hero-warm', newPalette.sun, 0.18);
+    if (newPalette.clay) setShadowVar('--hero-glow', newPalette.clay, 0.35);
+
+    // Also apply to standard theme variables for the main app
+    root.style.setProperty('--primary', newPalette.teal || '#1F6F78');
+    root.style.setProperty('--secondary', newPalette.clay || '#D86B4B');
+    root.style.setProperty('--accent', newPalette.sun || '#F2C14E');
+    root.style.setProperty('--background', newPalette.sand || '#F6E7CF');
+    root.style.setProperty('--muted', newPalette.sage || '#9DB59E');
+    root.style.setProperty('--foreground', newPalette.ink || '#1F2B2D');
+
+    // Update color names
+    const names: Record<string, string> = {};
+    paletteKeys.forEach(key => {
+      names[key] = getNearestColorName(newPalette[key]);
+    });
+    setColorNames(names);
+
+    // Update contrast values
+    const contrasts: Record<string, { ratio: number; grade: string }> = {};
+    const contrastPairs = [
+      { key: 'ink-sand', fg: 'ink', bg: 'sand' },
+      { key: 'sand-teal', fg: 'sand', bg: 'teal' },
+      { key: 'sun-ink', fg: 'sun', bg: 'ink' },
+    ];
+    contrastPairs.forEach(({ key, fg, bg }) => {
+      const ratio = contrastRatio(newPalette[fg], newPalette[bg]);
+      contrasts[key] = { ratio, grade: getContrastGrade(ratio) };
+    });
+    setContrastValues(contrasts);
+
+    onPaletteChange?.(newPalette);
+  }, [onPaletteChange]);
+
+  // Build palette from base
   const buildPalette = useCallback((baseHex: string, mode: 'analogous' | 'complementary' | 'triadic') => {
     const base = normalizeHex(baseHex);
     const { h } = hexToHsl(base);
@@ -211,20 +218,19 @@ export function BentoThemeCustomizer({ onPaletteChange, className }: BentoThemeC
       complementary: { warm: 180, accent: 210 },
       triadic: { warm: 120, accent: 240 },
     };
-
     const selected = offsets[mode];
 
-    return [
-      { key: 'primary', hex: base, name: getNearestColorName(base) },
-      { key: 'secondary', hex: hslToHex(shiftHue(h, selected.warm), 64, 52), name: '' },
-      { key: 'accent', hex: hslToHex(shiftHue(h, selected.accent), 82, 60), name: '' },
-      { key: 'background', hex: hslToHex(shiftHue(h, 18), 55, 92), name: '' },
-      { key: 'muted', hex: hslToHex(shiftHue(h, -22), 24, 66), name: '' },
-      { key: 'foreground', hex: hslToHex(shiftHue(h, 200), 22, 18), name: '' },
-    ].map(p => ({ ...p, name: getNearestColorName(p.hex) }));
+    return {
+      teal: base,
+      clay: hslToHex(shiftHue(h, selected.warm), 64, 52),
+      sun: hslToHex(shiftHue(h, selected.accent), 82, 60),
+      sand: hslToHex(shiftHue(h, 18), 55, 92),
+      sage: hslToHex(shiftHue(h, -22), 24, 66),
+      ink: hslToHex(shiftHue(h, 200), 22, 18),
+    };
   }, []);
 
-  const randomHex = (): string => {
+  const randomHex = () => {
     const hex = Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0');
     return `#${hex.toUpperCase()}`;
   };
@@ -232,377 +238,277 @@ export function BentoThemeCustomizer({ onPaletteChange, className }: BentoThemeC
   const randomizePalette = useCallback(() => {
     const newPalette = buildPalette(randomHex(), harmonyMode);
     setPalette(newPalette);
-    applyPaletteToDOM(newPalette);
-  }, [harmonyMode, buildPalette]);
-
-  const applyPaletteToDOM = (colors: PaletteColor[]) => {
-    const root = document.documentElement;
-    colors.forEach(({ key, hex }) => {
-      root.style.setProperty(`--theme-${key}`, hex);
-    });
-    
-    // Apply to CSS variables
-    const primary = colors.find(c => c.key === 'primary')?.hex || '#6366f1';
-    const foreground = colors.find(c => c.key === 'foreground')?.hex || '#1F2B2D';
-    const background = colors.find(c => c.key === 'background')?.hex || '#F8F6F0';
-    
-    root.style.setProperty('--primary', primary);
-    root.style.setProperty('--foreground', foreground);
-    root.style.setProperty('--background', background);
-    
-    onPaletteChange?.(colors.reduce((acc, { key, hex }) => ({ ...acc, [key]: hex }), {}));
-  };
+    applyPalette(newPalette);
+  }, [harmonyMode, buildPalette, applyPalette]);
 
   const handleColorChange = (key: string, hex: string) => {
-    const newPalette = palette.map(p =>
-      p.key === key ? { ...p, hex: normalizeHex(hex), name: getNearestColorName(hex) } : p
-    );
+    hasInteractedRef.current = true;
+    const newPalette = { ...palette, [key]: normalizeHex(hex) };
     setPalette(newPalette);
-    applyPaletteToDOM(newPalette);
-    setAutoRandomizing(false);
+    applyPalette(newPalette);
   };
 
   const handleGenerate = () => {
-    const base = palette.find(p => p.key === 'primary')?.hex || randomHex();
+    hasInteractedRef.current = true;
+    const base = palette.teal || randomHex();
     const newPalette = buildPalette(base, harmonyMode);
     setPalette(newPalette);
-    applyPaletteToDOM(newPalette);
-    setAutoRandomizing(false);
+    applyPalette(newPalette);
   };
 
   const handleExport = () => {
-    const cssLines = palette.map(({ key, hex }) => `  --${key}: ${hex};`);
+    const cssLines = paletteKeys.map(key => `  --${key}: ${palette[key]};`);
     const cssBlock = `:root {\n${cssLines.join('\n')}\n}`;
-    const json = JSON.stringify(palette.reduce((acc, { key, hex }) => ({ ...acc, [key]: hex }), {}), null, 2);
-    
+    const json = JSON.stringify(palette, null, 2);
+
     navigator.clipboard.writeText(`${cssBlock}\n\n${json}`).then(() => {
       setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
+      setTimeout(() => setCopied(false), 1200);
     });
   };
 
   // Auto-randomize on mount
   useEffect(() => {
-    if (autoRandomizing) {
-      autoRandomRef.current = setInterval(() => {
+    if (hasInteractedRef.current) return;
+
+    autoRandomRef.current = setInterval(() => {
+      if (!hasInteractedRef.current) {
         randomizePalette();
-      }, 450);
+      }
+    }, 450);
 
-      const timeout = setTimeout(() => {
-        setAutoRandomizing(false);
-        if (autoRandomRef.current) clearInterval(autoRandomRef.current);
-      }, 2200);
+    autoRandomTimeoutRef.current = setTimeout(() => {
+      if (autoRandomRef.current) clearInterval(autoRandomRef.current);
+    }, 2200);
 
-      return () => {
-        clearTimeout(timeout);
-        if (autoRandomRef.current) clearInterval(autoRandomRef.current);
-      };
-    }
+    return () => {
+      if (autoRandomRef.current) clearInterval(autoRandomRef.current);
+      if (autoRandomTimeoutRef.current) clearTimeout(autoRandomTimeoutRef.current);
+    };
   }, []);
 
-  // Stop auto-randomize on interaction
+  // Stop on interaction
   useEffect(() => {
-    const stopAuto = () => setAutoRandomizing(false);
-    const events = ['pointerdown', 'keydown', 'touchstart'];
-    events.forEach(event => window.addEventListener(event, stopAuto, { once: true }));
+    const stopAuto = () => {
+      hasInteractedRef.current = true;
+      if (autoRandomRef.current) clearInterval(autoRandomRef.current);
+      if (autoRandomTimeoutRef.current) clearTimeout(autoRandomTimeoutRef.current);
+    };
+    const events = ['pointerdown', 'keydown', 'touchstart'] as const;
+    events.forEach(event => window.addEventListener(event, stopAuto, { once: true, passive: true }));
     return () => events.forEach(event => window.removeEventListener(event, stopAuto));
   }, []);
 
-  // Animation variants for staggered entrance
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20, scale: 0.98 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: { delay: i * 0.05, duration: 0.5, ease: 'easeOut' },
-    }),
-  };
+  // Initial contrast calculation
+  useEffect(() => {
+    applyPalette(palette);
+  }, []);
 
   return (
-    <div className={cn('min-h-screen p-6 md:p-10', className)}>
-      {/* Background pattern */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-50/50 via-background to-indigo-50/50" />
-        <div 
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage: `repeating-linear-gradient(90deg, currentColor, currentColor 1px, transparent 1px, transparent 24px)`,
-          }}
-        />
-      </div>
+    <div className="bento-page">
+      <section className="bento-grid">
+        {/* Hero Card */}
+        <article className="bento-card bento-hero">
+          <div className="bento-eyebrow">Color Theory Challenge</div>
+          <h1 className="bento-title">Chromatic Bento</h1>
+          <p className="bento-lead">
+            Build a palette that balances warmth, calm, and clarity. Use clay for energy,
+            teal for trust, and sand for breathing room.
+          </p>
+          <div className="bento-hero-actions">
+            <button className="bento-btn bento-btn-primary" type="button" onClick={handleExport}>
+              {copied ? 'Copied!' : 'Export Palette'}
+            </button>
+            <button className="bento-btn bento-btn-ghost" type="button" onClick={() => applyPalette(palette)}>
+              Check Contrast
+            </button>
+          </div>
+          <div className="bento-metrics">
+            <div className="bento-metric">
+              <span className="bento-metric-value">60/30/10</span>
+              <span className="bento-metric-label">Balance</span>
+            </div>
+            <div className="bento-metric">
+              <span className="bento-metric-value">4.5:1+</span>
+              <span className="bento-metric-label">Contrast</span>
+            </div>
+            <div className="bento-metric">
+              <span className="bento-metric-value" style={{ textTransform: 'capitalize' }}>{harmonyMode}</span>
+              <span className="bento-metric-label">Harmony</span>
+            </div>
+          </div>
+        </article>
 
-      <div className="relative z-10 max-w-7xl mx-auto">
-        {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[minmax(180px,auto)]">
-          
-          {/* Hero Card */}
-          <motion.div
-            custom={0}
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
-            className="md:col-span-2 lg:col-span-2 lg:row-span-2"
-          >
-            <Card className="h-full overflow-hidden border-0 shadow-xl bg-gradient-to-br from-violet-500/10 via-background to-indigo-500/10">
-              <CardContent className="p-8 h-full flex flex-col">
-                <Badge variant="outline" className="w-fit mb-4 text-xs uppercase tracking-widest">
-                  <Sparkles className="w-3 h-3 mr-1" />
-                  Color Lab
-                </Badge>
-                <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
-                  Bento Theme Studio
-                </h1>
-                <p className="text-muted-foreground text-lg mb-6 flex-1">
-                  Build a palette that balances warmth, calm, and clarity. 
-                  Click any swatch to customize, or let the generator surprise you.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <Button onClick={handleGenerate} className="gap-2">
-                    <Palette className="w-4 h-4" />
-                    Generate
-                  </Button>
-                  <Button variant="outline" onClick={randomizePalette} className="gap-2">
-                    <Shuffle className="w-4 h-4" />
-                    Randomize
-                  </Button>
-                  <Button variant="ghost" onClick={handleExport} className="gap-2">
-                    {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Download className="w-4 h-4" />}
-                    {copied ? 'Copied!' : 'Export'}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Palette Swatches */}
-          <motion.div
-            custom={1}
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
-            className="md:col-span-2 lg:col-span-2"
-          >
-            <Card className="h-full border-0 shadow-lg">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm uppercase tracking-wider text-muted-foreground">
-                  Color Swatches
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {palette.map((color) => (
-                    <label
-                      key={color.key}
-                      className="relative group cursor-pointer"
-                    >
-                      <div
-                        className="rounded-xl p-4 min-h-[80px] flex flex-col justify-end transition-all duration-200 group-hover:scale-[1.02] group-hover:-translate-y-1"
-                        style={{
-                          backgroundColor: color.hex,
-                          color: getReadableTextColor(color.hex),
-                          boxShadow: `0 10px 40px ${color.hex}40`,
-                        }}
-                      >
-                        <span className="font-semibold text-sm capitalize">{color.key}</span>
-                        <span className="text-xs opacity-80">{color.name}</span>
-                        <span className="text-[10px] font-mono opacity-70 mt-1">{color.hex}</span>
-                      </div>
-                      <input
-                        type="color"
-                        value={color.hex}
-                        onChange={(e) => handleColorChange(color.key, e.target.value)}
-                        className="absolute inset-0 opacity-0 cursor-pointer"
-                        aria-label={`Edit ${color.key} color`}
-                      />
-                    </label>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Harmony Mode */}
-          <motion.div
-            custom={2}
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <Card className="h-full border-0 shadow-lg">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm uppercase tracking-wider text-muted-foreground">
-                  Harmony Mode
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {(['analogous', 'complementary', 'triadic'] as const).map((mode) => (
-                  <button
-                    key={mode}
-                    onClick={() => {
-                      setHarmonyMode(mode);
-                      handleGenerate();
-                    }}
-                    className={cn(
-                      "w-full px-4 py-2 rounded-lg text-sm font-medium transition-all capitalize",
-                      harmonyMode === mode
-                        ? "bg-primary text-primary-foreground shadow-lg"
-                        : "bg-muted hover:bg-muted/80"
-                    )}
-                  >
-                    {mode}
-                  </button>
-                ))}
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Contrast Checker */}
-          <motion.div
-            custom={3}
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
-            className="lg:col-span-2"
-          >
-            <Card className="h-full border-0 shadow-lg">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                  <Contrast className="w-4 h-4" />
-                  Contrast Checker
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { fg: 'foreground', bg: 'background' },
-                    { fg: 'background', bg: 'primary' },
-                    { fg: 'accent', bg: 'foreground' },
-                  ].map(({ fg, bg }, i) => {
-                    const fgColor = palette.find(c => c.key === fg)?.hex || '#000';
-                    const bgColor = palette.find(c => c.key === bg)?.hex || '#fff';
-                    const ratio = contrastRatio(fgColor, bgColor);
-                    const grade = getContrastGrade(ratio);
-
-                    return (
-                      <div
-                        key={i}
-                        className={cn(
-                          "rounded-xl p-3 flex flex-col justify-between",
-                          "border-2",
-                          ratio >= 4.5 ? "border-emerald-500/30" : "border-rose-500/30"
-                        )}
-                        style={{ backgroundColor: bgColor, color: fgColor }}
-                      >
-                        <span className="text-xs font-medium capitalize">{fg} on {bg}</span>
-                        <div className="flex items-center justify-between mt-2">
-                          <span className="text-xs font-bold">{ratio.toFixed(1)}:1</span>
-                          <span className={cn(
-                            "text-[10px] px-2 py-0.5 rounded-full font-bold",
-                            ratio >= 4.5 ? "bg-emerald-500/20" : "bg-rose-500/20"
-                          )}>
-                            {grade}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Harmony Strip */}
-          <motion.div
-            custom={4}
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
-            className="lg:col-span-2"
-          >
-            <Card className="h-full border-0 shadow-lg">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                  <Layers className="w-4 h-4" />
-                  Harmony Strip
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div
-                  className="h-24 rounded-xl mb-4"
-                  style={{
-                    background: `linear-gradient(90deg, ${palette.map(c => c.hex).join(', ')})`,
-                  }}
+        {/* Palette Swatches */}
+        <article className="bento-card bento-palette">
+          <h2 className="bento-section-title">Palette Swatches</h2>
+          <div className="swatch-list">
+            {paletteKeys.map((key) => (
+              <label key={key} className={cn('swatch-card', `swatch-${key}`)}>
+                <input
+                  className="swatch-input"
+                  type="color"
+                  value={palette[key]}
+                  onChange={(e) => handleColorChange(key, e.target.value)}
+                  aria-label={`${key} color`}
                 />
-                <div className="flex flex-wrap gap-2">
-                  {palette.slice(0, 4).map((color) => (
-                    <Badge key={color.key} variant="secondary" className="text-xs">
-                      {color.key}: {color.name}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+                <span className="swatch-dot" aria-hidden="true" />
+                <span className="swatch-name">{colorNames[key]}</span>
+                <span className="swatch-value" data-color-value={key}>{palette[key]}</span>
+              </label>
+            ))}
+          </div>
+        </article>
 
-          {/* Temperature Map */}
-          <motion.div
-            custom={5}
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
-            className="lg:col-span-2"
-          >
-            <Card className="h-full border-0 shadow-lg">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                  <Sun className="w-4 h-4" />
-                  Temperature Map
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div
-                  className="h-16 rounded-full flex items-center justify-between px-6"
-                  style={{
-                    background: `linear-gradient(90deg, ${palette.find(c => c.key === 'primary')?.hex}, ${palette.find(c => c.key === 'muted')?.hex}, ${palette.find(c => c.key === 'accent')?.hex}, ${palette.find(c => c.key === 'secondary')?.hex})`,
+        {/* Contrast Ladder */}
+        <article className="bento-card bento-contrast">
+          <h2 className="bento-section-title">Contrast Ladder</h2>
+          <div className="contrast-stack">
+            <div className={cn('contrast-row contrast-ink', contrastValues['ink-sand']?.ratio && contrastValues['ink-sand'].ratio >= 4.5 ? 'contrast-pass' : 'contrast-warn')}>
+              <span className="contrast-label">
+                <span data-contrast-foreground="ink">{colorNames.ink}</span> on{' '}
+                <span data-contrast-background="sand">{colorNames.sand}</span>
+              </span>
+              <span className="contrast-meta">
+                <span>{contrastValues['ink-sand']?.grade || 'AA'}</span>
+                <span data-contrast-value>{contrastValues['ink-sand']?.ratio?.toFixed(1) || '9.8'}</span>
+              </span>
+            </div>
+            <div className={cn('contrast-row contrast-teal', contrastValues['sand-teal']?.ratio && contrastValues['sand-teal'].ratio >= 4.5 ? 'contrast-pass' : 'contrast-warn')}>
+              <span className="contrast-label">
+                <span data-contrast-foreground="sand">{colorNames.sand}</span> on{' '}
+                <span data-contrast-background="teal">{colorNames.teal}</span>
+              </span>
+              <span className="contrast-meta">
+                <span>{contrastValues['sand-teal']?.grade || 'AA'}</span>
+                <span data-contrast-value>{contrastValues['sand-teal']?.ratio?.toFixed(1) || '5.3'}</span>
+              </span>
+            </div>
+            <div className={cn('contrast-row contrast-sun', contrastValues['sun-ink']?.ratio && contrastValues['sun-ink'].ratio >= 4.5 ? 'contrast-pass' : 'contrast-warn')}>
+              <span className="contrast-label">
+                <span data-contrast-foreground="sun">{colorNames.sun}</span> on{' '}
+                <span data-contrast-background="ink">{colorNames.ink}</span>
+              </span>
+              <span className="contrast-meta">
+                <span>{contrastValues['sun-ink']?.grade || 'AA'}</span>
+                <span data-contrast-value>{contrastValues['sun-ink']?.ratio?.toFixed(1) || '7.1'}</span>
+              </span>
+            </div>
+          </div>
+          <p className="bento-note">Keep buttons at AA or above for readable CTAs.</p>
+        </article>
+
+        {/* Temperature Map */}
+        <article className="bento-card bento-temp">
+          <h2 className="bento-section-title">Temperature Map</h2>
+          <div className="temp-bar">
+            <span className="temp cool">Cool</span>
+            <span className="temp warm">Warm</span>
+          </div>
+          <p className="bento-note">Anchor layouts with cool tones and highlight with warm accents.</p>
+        </article>
+
+        {/* Type Hierarchy */}
+        <article className="bento-card bento-type">
+          <h2 className="bento-section-title">Type Hierarchy</h2>
+          <div className="type-sample">
+            <span className="bento-kicker">Section Label</span>
+            <h3>Visual Weight and Rhythm</h3>
+            <p>Use size, color, and spacing to guide attention.</p>
+          </div>
+        </article>
+
+        {/* Harmony Strip */}
+        <article className="bento-card bento-harmony">
+          <h2 className="bento-section-title">Harmony Strip</h2>
+          <div className="harmony-strip" />
+          <div className="chip-row">
+            <span className="bento-chip">Base: {colorNames.teal}</span>
+            <span className="bento-chip">Accent: {colorNames.clay}</span>
+            <span className="bento-chip">Neutral: {colorNames.sand}</span>
+          </div>
+        </article>
+
+        {/* Accent Rules */}
+        <article className="bento-card bento-accent">
+          <h2 className="bento-section-title">Accent Rules</h2>
+          <div className="accent-buttons">
+            <button className="bento-btn bento-btn-primary" type="button">Primary Action</button>
+            <button className="bento-btn bento-btn-outline" type="button">Secondary</button>
+            <button className="bento-btn bento-btn-ghost" type="button">View Guidelines</button>
+          </div>
+          <p className="bento-note">Reserve clay for emphasis and sun for friendly highlights.</p>
+        </article>
+
+        {/* Usage Example */}
+        <article className="bento-card bento-usage">
+          <h2 className="bento-section-title">Usage Example</h2>
+          <div className="usage-panel">
+            <div className="usage-header">
+              <span className="usage-label">UI Sample</span>
+              <span className="status-pill">Live</span>
+            </div>
+            <h3 className="usage-title">PHaVE Learner</h3>
+            <p className="usage-text">Use sand for structure and clay for urgency cues.</p>
+            <div className="usage-tags">
+              <span className="bento-tag">Flashcards</span>
+              <span className="bento-tag">Quiz</span>
+              <span className="bento-tag">Progress</span>
+            </div>
+          </div>
+        </article>
+
+        {/* Palette Controls */}
+        <article className="bento-card bento-controls">
+          <h2 className="bento-section-title">Palette Controls</h2>
+          <div className="palette-controls">
+            <div className="control-row">
+              <label className="bento-control">
+                <span>Base Color</span>
+                <input
+                  type="color"
+                  value={palette.teal}
+                  onChange={(e) => {
+                    hasInteractedRef.current = true;
+                    const newPalette = buildPalette(e.target.value, harmonyMode);
+                    setPalette(newPalette);
+                    applyPalette(newPalette);
                   }}
+                  aria-label="Base color"
+                />
+              </label>
+              <label className="bento-control">
+                <span>Mode</span>
+                <select
+                  value={harmonyMode}
+                  onChange={(e) => {
+                    hasInteractedRef.current = true;
+                    const mode = e.target.value as typeof harmonyMode;
+                    setHarmonyMode(mode);
+                    const newPalette = buildPalette(palette.teal, mode);
+                    setPalette(newPalette);
+                    applyPalette(newPalette);
+                  }}
+                  aria-label="Palette mode"
                 >
-                  <span className="text-white text-xs font-bold uppercase tracking-wider drop-shadow-lg">Cool</span>
-                  <span className="text-white text-xs font-bold uppercase tracking-wider drop-shadow-lg">Warm</span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-3">
-                  Anchor layouts with cool tones, highlight with warm accents.
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Type Hierarchy */}
-          <motion.div
-            custom={6}
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <Card className="h-full border-0 shadow-lg">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                  <Type className="w-4 h-4" />
-                  Type Hierarchy
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div>
-                  <span className="text-xs uppercase tracking-widest text-violet-600 font-bold">Section Label</span>
-                  <h3 className="text-xl font-bold mt-1">Visual Weight</h3>
-                  <p className="text-sm text-muted-foreground">Use size and color to guide.</p>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-        </div>
-      </div>
+                  <option value="analogous">Analogous</option>
+                  <option value="complementary">Complementary</option>
+                  <option value="triadic">Triadic</option>
+                </select>
+              </label>
+            </div>
+            <div className="control-row control-actions">
+              <button className="bento-btn bento-btn-primary bento-btn-small" type="button" onClick={handleGenerate}>
+                Generate
+              </button>
+              <button className="bento-btn bento-btn-ghost bento-btn-small" type="button" onClick={randomizePalette}>
+                Randomize
+              </button>
+            </div>
+            <p className="bento-note">Start with a base color to generate a fresh palette instantly.</p>
+          </div>
+        </article>
+      </section>
     </div>
   );
 }

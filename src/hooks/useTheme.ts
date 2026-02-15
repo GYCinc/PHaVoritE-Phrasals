@@ -7,7 +7,8 @@ export type Theme =
   | 'colorful' 
   | 'sepia' 
   | 'midnight'
-  | 'forest';
+  | 'forest'
+  | 'custom';
 
 interface ThemeConfig {
   name: string;
@@ -91,9 +92,20 @@ export const themes: Record<Theme, ThemeConfig> = {
       accent: '#16a34a',
     },
   },
+  custom: {
+    name: 'Custom',
+    description: 'Your personalized palette from Theme Studio',
+    icon: '🎨',
+    colors: {
+      primary: '#1F6F78',
+      background: '#F6E7CF',
+      accent: '#F2C14E',
+    },
+  },
 };
 
 const STORAGE_KEY = 'phave-theme';
+const CUSTOM_PALETTE_KEY = 'phave-custom-palette';
 
 export function useTheme() {
   const [theme, setThemeState] = useState<Theme>('light');
@@ -101,6 +113,17 @@ export function useTheme() {
 
   // Load theme from localStorage on mount
   useEffect(() => {
+    // Check for custom palette first
+    const customPalette = localStorage.getItem(CUSTOM_PALETTE_KEY);
+    if (customPalette) {
+      try {
+        const palette = JSON.parse(customPalette);
+        applyCustomPalette(palette);
+      } catch (e) {
+        console.error('Error loading custom palette:', e);
+      }
+    }
+
     const stored = localStorage.getItem(STORAGE_KEY) as Theme;
     if (stored && themes[stored]) {
       setThemeState(stored);
@@ -114,6 +137,39 @@ export function useTheme() {
     }
     setIsLoaded(true);
   }, []);
+
+  // Apply custom palette from bento studio
+  const applyCustomPalette = (palette: Record<string, string>) => {
+    const root = document.documentElement;
+    
+    // Map bento palette to CSS variables
+    const mappings: Record<string, string> = {
+      teal: 'primary',
+      clay: 'secondary', 
+      sun: 'accent',
+      sand: 'background',
+      sage: 'muted',
+      ink: 'foreground',
+    };
+
+    Object.entries(mappings).forEach(([bentoKey, cssKey]) => {
+      if (palette[bentoKey]) {
+        root.style.setProperty(`--${cssKey}`, palette[bentoKey]);
+      }
+    });
+
+    // Update custom theme config
+    themes.custom.colors = {
+      primary: palette.teal || '#1F6F78',
+      background: palette.sand || '#F6E7CF',
+      accent: palette.sun || '#F2C14E',
+    };
+
+    // Apply bento variables too
+    Object.entries(palette).forEach(([key, value]) => {
+      root.style.setProperty(`--${key}`, value);
+    });
+  };
 
   // Apply theme to document
   const applyTheme = (newTheme: Theme) => {
@@ -132,6 +188,18 @@ export function useTheme() {
       root.classList.add('dark');
     } else {
       root.classList.remove('dark');
+    }
+
+    // If custom theme, reapply custom palette
+    if (newTheme === 'custom') {
+      const customPalette = localStorage.getItem(CUSTOM_PALETTE_KEY);
+      if (customPalette) {
+        try {
+          applyCustomPalette(JSON.parse(customPalette));
+        } catch (e) {
+          console.error('Error applying custom palette:', e);
+        }
+      }
     }
   };
 
@@ -152,6 +220,17 @@ export function useTheme() {
     return themes[theme].colors;
   }, [theme]);
 
+  // Set custom palette and switch to custom theme
+  const setCustomPalette = useCallback((palette: Record<string, string>) => {
+    const root = document.documentElement;
+    localStorage.setItem(CUSTOM_PALETTE_KEY, JSON.stringify(palette));
+    applyCustomPalette(palette);
+    setThemeState('custom');
+    localStorage.setItem(STORAGE_KEY, 'custom');
+    root.setAttribute('data-theme', 'custom');
+    root.classList.remove('dark');
+  }, []);
+
   return {
     theme,
     setTheme,
@@ -160,5 +239,6 @@ export function useTheme() {
     isLoaded,
     getThemeColors,
     currentTheme: themes[theme],
+    setCustomPalette,
   };
 }
